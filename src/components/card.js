@@ -1,3 +1,4 @@
+import axios from "axios";
 const Card = (article) => {
   // TASK 5
   // ---------------------
@@ -17,6 +18,32 @@ const Card = (article) => {
   //   </div>
   // </div>
   //
+  const cardDiv = document.createElement('div');
+  const headline = document.createElement('div');
+  const authorDiv = document.createElement('div');
+  const imgContainer = document.createElement('div');
+  const authorImg = document.createElement('img');
+  const authorName = document.createElement('span');
+
+  cardDiv.appendChild(headline);
+  cardDiv.appendChild(authorDiv);
+  authorDiv.appendChild(imgContainer);
+  imgContainer.appendChild(authorImg);
+  authorDiv.appendChild(authorName);
+
+  cardDiv.className = 'card';
+  headline.className = 'headline';
+  headline.textContent = `${article.headline}`;
+  authorDiv.className = 'author';
+  imgContainer.className = 'img-container';
+  authorImg.src = `${article.authorPhoto}`;
+  authorName.textContent = `By ${article.authorName}`;
+  
+  cardDiv.addEventListener('click', event => {
+    console.log(`Headline: ${article.headline}`);
+  })
+  return cardDiv;
+
 }
 
 const cardAppender = (selector) => {
@@ -28,6 +55,36 @@ const cardAppender = (selector) => {
   // Create a card from each and every article object in the response, using the Card component.
   // Append each card to the element in the DOM that matches the selector passed to the function.
   //
+  axios.get('http://localhost:5001/api/articles')
+  .then(result => {
+    const cardContainer = document.querySelector(selector);
+    let articlesArray = [];
+    const articlesObj = result.data.articles;
+
+    const bootstrapArticle = articlesObj.bootstrap;
+    const javascriptArticle = articlesObj.javascript;
+    const jQueryArticle = articlesObj.jquery;
+    const technologyArticle = articlesObj.technology;
+    const nodeArticle = articlesObj.node;
+    articlesArray.push(bootstrapArticle, javascriptArticle, jQueryArticle, nodeArticle, technologyArticle);
+   
+    articlesArray.forEach(elementArray => {
+      elementArray.forEach(element => {
+        const elementCard = Card(element);
+        cardContainer.appendChild(elementCard);
+        
+      })
+    })
+  })
+  
+  
+  
+  .catch(err => {
+    console.error(err);
+  })
+
+
 }
+
 
 export { Card, cardAppender }
